@@ -1,12 +1,83 @@
+# services:
+#   ollama:
+#     volumes:
+#       - ollama:/root/.ollama
+#     container_name: ollama
+#     pull_policy: always
+#     tty: true
+#     restart: unless-stopped
+#     image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+
+#   open-webui:
+#     build:
+#       context: .
+#       args:
+#         OLLAMA_BASE_URL: '/ollama'
+#       dockerfile: Dockerfile
+#     image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
+#     container_name: open-webui
+#     volumes:
+#       - open-webui:/app/backend/data
+#     depends_on:
+#       - ollama
+#     ports:
+#       - ${OPEN_WEBUI_PORT-3000}:8080
+#     environment:
+#       - 'OLLAMA_BASE_URL=http://ollama:11434'
+#       - 'WEBUI_SECRET_KEY='
+#     extra_hosts:
+#       - host.docker.internal:host-gateway
+#     restart: unless-stopped
+
+# volumes:
+#   ollama: {}
+#   open-webui: {}
+
+#  WORKED
+# services:
+#   ollama:
+#     volumes:
+#       - ollama:/root/.ollama
+#     container_name: ollama
+#     pull_policy: always
+#     tty: true
+#     restart: unless-stopped
+#     image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+
+#   open-webui:
+#     build:
+#       context: .
+#       args:
+#         OLLAMA_BASE_URL: '/ollama'
+#       dockerfile: Dockerfile
+#     image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
+#     container_name: open-webui
+#     volumes:
+#       - open-webui:/app/backend/data
+#     ports:
+#       - ${OPEN_WEBUI_PORT-3000}:8080
+#     environment:
+#       - 'OLLAMA_BASE_URL=http://host.docker.internal:11434'
+#       - 'WEBUI_SECRET_KEY='
+#     extra_hosts:
+#       - host.docker.internal:host-gateway
+#     restart: unless-stopped
+
+# volumes:
+#   ollama: {}
+#   open-webui: {}
+
+version: '3.8'
+
 services:
   ollama:
     volumes:
       - ollama:/root/.ollama
     container_name: ollama
-    pull_policy: always
+    image: ollama:local
+    # image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
     tty: true
     restart: unless-stopped
-    image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
 
   open-webui:
     build:
@@ -18,12 +89,10 @@ services:
     container_name: open-webui
     volumes:
       - open-webui:/app/backend/data
-    depends_on:
-      - ollama
     ports:
       - ${OPEN_WEBUI_PORT-3000}:8080
     environment:
-      - 'OLLAMA_BASE_URL=http://ollama:11434'
+      - 'OLLAMA_BASE_URL=http://host.docker.internal:11434'
       - 'WEBUI_SECRET_KEY='
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -32,3 +101,8 @@ services:
 volumes:
   ollama: {}
   open-webui: {}
+
+# Optional secrets block for sensitive information
+secrets:
+  webui_secret_key:
+    file: ./backend/.webui_secret_key

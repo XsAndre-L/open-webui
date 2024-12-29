@@ -1,8 +1,8 @@
 
-ifneq ($(shell which docker-compose 2>/dev/null),)
-    DOCKER_COMPOSE := docker-compose
+ifneq ($(shell which podman-compose 2>/dev/null),)
+    DOCKER_COMPOSE := podman-compose
 else
-    DOCKER_COMPOSE := docker compose
+    DOCKER_COMPOSE := podman compose
 endif
 
 install:
