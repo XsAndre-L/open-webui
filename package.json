@@ -3,6 +3,7 @@
 	"version": "0.5.2",
 	"private": true,
 	"scripts": {
+		"setup:backend": "bun scripts/setup-backend.ts",
 		"dev": "bun run pyodide:fetch && vite dev --host",
 		"build": "bun run pyodide:fetch && vite build",
 		"preview": "vite preview",
