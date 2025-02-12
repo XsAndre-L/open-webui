@@ -237,6 +237,7 @@ async def channel_events(sid, data):
             "channel-events",
             {
                 "channel_id": data["channel_id"],
+                "message_id": data.get("message_id", None),
                 "data": event_data,
                 "user": UserNameResponse(**SESSION_POOL[sid]).model_dump(),
             },
@@ -292,11 +293,39 @@ def get_event_emitter(request_info):
                 event_data.get("data", {}),
             )
 
+        if "type" in event_data and event_data["type"] == "message":
+            message = Chats.get_message_by_id_and_message_id(
+                request_info["chat_id"],
+                request_info["message_id"],
+            )
+
+            content = message.get("content", "")
+            content += event_data.get("data", {}).get("content", "")
+
+            Chats.upsert_message_to_chat_by_id_and_message_id(
+                request_info["chat_id"],
+                request_info["message_id"],
+                {
+                    "content": content,
+                },
+            )
+
+        if "type" in event_data and event_data["type"] == "replace":
+            content = event_data.get("data", {}).get("content", "")
+
+            Chats.upsert_message_to_chat_by_id_and_message_id(
+                request_info["chat_id"],
+                request_info["message_id"],
+                {
+                    "content": content,
+                },
+            )
+
     return __event_emitter__
 
 
 def get_event_call(request_info):
-    async def __event_call__(event_data):
+    async def __event_caller__(event_data):
         response = await sio.call(
             "chat-events",
             {
@@ -308,7 +337,10 @@ def get_event_call(request_info):
         )
         return response
 
-    return __event_call__
+    return __event_caller__
+
+
+get_event_caller = get_event_call
 
 
 def get_user_id_from_session_pool(sid):
