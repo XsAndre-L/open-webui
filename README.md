@@ -15,7 +15,7 @@
 
 For more information, be sure to check out our [Open WebUI Documentation](https://docs.openwebui.com/).
 
-![Open WebUI Demo](./demo.gif)
+![Open WebUI Demo](./docs/demo.gif)
 
 ## Key Features of Open WebUI ⭐
 
